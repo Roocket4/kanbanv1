@@ -2,36 +2,9 @@ import { CONSTANTS } from '../actions';
 
 
 let listID = 2;
-let cardID = 4;
+let cardID = 5;
 
-const initialState = [
-  {
-    title: 'First Time',
-    id: `list-${0}`,
-    cards: [{
-        id: `card-${0}`,
-        text: "we created something something",
-      },
-      {
-        id: `card-${1}`,
-        text: "blaa blaaa blllllllllllla boiii",
-      }
-    ]
-  },
-  {
-    title: 'This Time',
-    id: `list-${1}`,
-    cards: [{
-        id: `card-${2}`,
-        text: "cardorama",
-      },
-      {
-        id: `card-${3}`,
-        text: "banana",
-      }
-    ]
-  }
-];
+const initialState = [];
 
 const listsReducer = (state = initialState, action) => {
   switch(action.type) {
@@ -61,6 +34,33 @@ const listsReducer = (state = initialState, action) => {
      });
 
      return newState;
+
+     case CONSTANTS.DRAG_HAPPEND: {
+        const {  droppableIdStart,
+          droppableIdEnd,
+          droppablelndexStart,
+          droppablelndexEnd,
+         } = action.payload;
+        const newState = [...state];
+
+        if(droppableIdStart === droppableIdEnd) {
+          const list = state.find(list => droppableIdStart === list.id);
+          const card = list.cards.splice(droppablelndexStart, 1);
+          list.cards.splice(droppablelndexEnd, 0, ...card);
+        }
+
+        if(droppableIdStart !== droppableIdEnd){
+          const listStart = state.find(list => droppableIdStart === list.id);
+          
+          const card = listStart.cards.splice(droppablelndexStart, 1);
+
+          const listEnd = state.find(list => droppableIdEnd === list.id);
+
+          listEnd.cards.splice(droppablelndexEnd, 0, ...card);
+        }
+
+        return newState;
+      };
 
     default: 
       return state;
